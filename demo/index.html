@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Quick demo/prototype page</title>
+	<style>
+	#jsonIn {
+		background: #ffc;
+		border: 1px solid #ec9;
+		padding: 4px;
+		display: none;
+	}
+
+	div {
+		padding: 2px;
+		border: 1px solid #ccc;
+	}
+	div > div { border-color: #999; }
+	div > div > div { border-color: #666; }
+	</style>
+</head>
+<body>
+
+<pre id="jsonIn">
+{
+  "htmlcode": {
+    "tags": [
+      {
+        "div": {
+          "id": "wrapperDiv",
+          "class": "textblock wrapper clr",
+          "tags": [
+            {
+              "span": {
+                "text": "span text",
+                "title": "title text"
+              }
+            },
+            {
+              "text": "div text"
+            }
+          ]
+        }
+      },
+      {
+        "input": {
+          "type": "text",
+          "class": "field text-field",
+          "placeholder": "search",
+          "name": "searchBox"
+        }
+      }
+    ]
+  }
+}
+</pre>
+<div id="htmlOut">
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.0.slim.min.js"></script>
+<script>
+var $in = $('#jsonIn'), $out = $('#htmlOut');
+function json2html(jsonstring) {
+	var json;
+	// validate json syntax
+  try { json = JSON.parse(jsonstring) }
+  catch(err) { console.error(err); return }
+  
+  // validate we got an object with html property
+  if (typeof json !== 'object' || typeof json.html === 'undefined') {
+  	console.error('JSON string doesn\'t contain HTML');
+    return
+  }
+  
+  traverseJSON(json.html.tags, $out);
+}
+
+function traverseJSON(json, target) {
+	console.log('tj', json);
+	json.forEach(function(el) {
+  	var newel = $('div');
+    console.log(el);
+  	if (typeof el.tags !== 'undefined')
+  		traverseJSON(el.tags, newel);
+    else
+    	target.append(newel);
+  });
+}
+
+json2html($in.text());
+</script>
+</body>
+</html>
